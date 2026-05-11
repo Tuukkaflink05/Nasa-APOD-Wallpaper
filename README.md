@@ -3,6 +3,8 @@
 
 - uses powershell commands to fetch, save, and set the Nasa astronomy picture of the day as your wallpaper.
 
+- [Current picture of the day](https://apod.nasa.gov/apod/)
+
 ## Requirements
 - Nasa api key
     - Generate a key from [api.nasa.gov](https://api.nasa.gov/)
