@@ -23,7 +23,16 @@ function Set-Wallpaper {
 }
 
 $url = "https://api.nasa.gov/planetary/apod?api_key=$APIKEY"
-$Response = Invoke-WebRequest -UseBasicParsing -Method 'GET' -Uri $url
+
+try {
+    $Response = Invoke-WebRequest -UseBasicParsing -Method 'GET' -Uri $url
+} catch {
+    $StatusCode = $_.Exception.Response.StatusCode.value__
+    Write-Warning "Web request failed with code: $StatusCode"
+    Write-Output "Exiting"
+    exit 1
+}
+
 $object = $Response.Content | ConvertFrom-Json
 
 ## parse the output
@@ -44,12 +53,12 @@ if ($type -eq "image")
 
     $fullPath = Join-Path $path $imgName
 
-
     ##save the image
     Invoke-WebRequest -UseBasicParsing -outfile $fullPath -Uri $imgUrl
 
     Set-Wallpaper -ImgPath $fullPath
 }
 else {
+    #TODO: do something when the image is not an image and when the request fails
     Write-Warning "object type is not an image"
 }
