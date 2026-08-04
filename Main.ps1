@@ -1,4 +1,9 @@
-$url = 'https://api.nasa.gov/planetary/apod?api_key=YOUR-API-KEY-HERE'
+$APIKEY = "YOURAPIKEYHERE"
+$DESCSAVEPATH = "YOURDESCRIPTIONSAVEPATHHERE"
+$IMAGEPATH = "YOURIMAGESAVEPATHHERE"
+
+
+$url = "https://api.nasa.gov/planetary/apod?api_key=$APIKEY"
 $Response = Invoke-WebRequest -UseBasicParsing -Method 'GET' -Uri $url
 $object = $Response.Content | ConvertFrom-Json
 
@@ -9,10 +14,9 @@ $imgUrl = $object."url"
 $date = $object.date
 
 #save description text
-("$title`n") + ("$date`n") + (($Explanation -split '\. ') -join "`n") | Out-File YOUR-DESCRIPTION-SAVE-PATH-HERE\Description.txt
+("$title`n") + ("$date`n") + (($Explanation -split '\. ') -join "`n") | Out-File $DESCSAVEPATH
 
-##Where to save the image
-$path = "YOUR-IMAGE-SAVE-PATH-HERE"
+$path = $IMAGEPATH
 $imgName = "$date.jpg"
 
 $fullPath = Join-Path $path $imgName
