@@ -12,25 +12,35 @@ $explanation = $object."explanation"
 $title = $object."title"
 $imgUrl = $object."url"
 $date = $object.date
+$type = $object."media_type"
 
-#save description text
-("$title`n") + ("$date`n") + (($Explanation -split '\. ') -join "`n") | Out-File $DESCSAVEPATH
 
-$path = $IMAGEPATH
-$imgName = "$date.jpg"
+if ($type -eq "image")
+{
+    #save description text
+    ("$title`n") + ("$date`n") + (($Explanation -split '\. ') -join "`n") | Out-File $DESCSAVEPATH
 
-$fullPath = Join-Path $path $imgName
+    $path = $IMAGEPATH
+    $imgName = "$date.jpg"
 
-##save the image
-Invoke-WebRequest -UseBasicParsing -outfile $fullPath -Uri $imgUrl
+    $fullPath = Join-Path $path $imgName
 
-##set the image
-Add-Type -TypeDefinition @"
-using System;
-using System.Runtime.InteropServices;
-public class Wallpaper {
-    [DllImport("user32.dll")]
-    public static extern int SystemParametersInfo(int uAction, int uParam, string lpvParam, int fuWinIni);
-}
+
+    ##save the image
+    Invoke-WebRequest -UseBasicParsing -outfile $fullPath -Uri $imgUrl
+
+    ##set the image
+    Add-Type -TypeDefinition @"
+    using System;
+    using System.Runtime.InteropServices;
+    public class Wallpaper {
+        [DllImport("user32.dll")]
+        public static extern int SystemParametersInfo(int uAction, int uParam, string lpvParam, int fuWinIni);
+    }
 "@
-[Wallpaper]::SystemParametersInfo(20, 0, $fullPath, 3)
+    [Wallpaper]::SystemParametersInfo(20, 0, $fullPath, 3)
+}
+else
+{
+    Write-Warning "object type is not an image"
+}
