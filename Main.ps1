@@ -10,6 +10,7 @@ function Set-Wallpaper {
     )
 
     ##set the image
+    if (-not ("Wallpaper" -as [type])) {
     Add-Type -TypeDefinition @"
     using System;
     using System.Runtime.InteropServices;
@@ -18,7 +19,28 @@ function Set-Wallpaper {
         public static extern int SystemParametersInfo(int uAction, int uParam, string lpvParam, int fuWinIni);
     }
 "@
+    }
+
     [Wallpaper]::SystemParametersInfo(20, 0, $ImgPath, 3)
+
+    Write-Output "Image set"
+    exit 0
+}
+
+#attempts to get a random image from the ImageSave path specified
+function Get-RandomImg {
+    Write-Output "Finding Random image"
+    $allImgs = Get-ChildItem -Path $IMAGESAVEPATH  *.jpg -Name
+
+    if ($null -eq $allImgs) {
+        Write-Output "no Image found"
+        exit 2
+    }
+
+    $randomImg = $allImgs | Get-Random
+    $fullPath = Join-Path $IMAGESAVEPATH $randomImg
+
+    Set-Wallpaper -ImgPath $fullPath
 
 }
 
@@ -28,9 +50,12 @@ try {
     $Response = Invoke-WebRequest -UseBasicParsing -Method 'GET' -Uri $url
 } catch {
     $StatusCode = $_.Exception.Response.StatusCode.value__
-    Write-Warning "Web request failed with code: $StatusCode"
-    Write-Output "Exiting"
-    exit 1
+    $errorMsg = "Web request failed with code: $StatusCode"
+    Write-Warning  $errorMsg
+    Write-Output "Error saved to description file"
+    $errorMsg | Out-File $DESCSAVEPATH
+
+    Get-RandomImg
 }
 
 $object = $Response.Content | ConvertFrom-Json
@@ -39,6 +64,7 @@ $object = $Response.Content | ConvertFrom-Json
 $explanation = $object."explanation"
 $title = $object."title"
 $imgUrl = $object."url"
+$hdImgUrl = $object."hdurl"
 $date = $object.date
 $type = $object."media_type"
 
@@ -54,11 +80,16 @@ if ($type -eq "image")
     $fullPath = Join-Path $path $imgName
 
     ##save the image
-    Invoke-WebRequest -UseBasicParsing -outfile $fullPath -Uri $imgUrl
+    #if hd image url is not null try to save the hd image else save normal image
+    if ($null -ne $hdImgUrl) {
+        Invoke-WebRequest -UseBasicParsing -outfile $fullPath -Uri $hdImgUrl
+    } else {
+        Invoke-WebRequest -UseBasicParsing -outfile $fullPath -Uri $imgUrl
+    }
 
     Set-Wallpaper -ImgPath $fullPath
 }
 else {
-    #TODO: do something when the image is not an image and when the request fails
     Write-Warning "object type is not an image"
+    Get-RandomImg
 }
