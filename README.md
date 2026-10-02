@@ -1,4 +1,5 @@
 # Nasa-APOD-Wallpaper
+## does not work currently. TODO : fix!
 ### Fetch the Nasa Astronomy Picture of the Day and set it as Windows wallpaper
 
 - uses powershell commands to fetch, save, and set the Nasa astronomy picture of the day as your wallpaper.
