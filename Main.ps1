@@ -52,16 +52,20 @@ catch {
     $errorMsg = "Web request failed with code: $StatusCode"
     Write-Warning  $errorMsg
     Write-Output "Error saved to description file"
-    $errorMsg | Out-File $DESCSAVEPATH
+    $errorMsg | Out-File $ALTSAVEPATH
 
     Get-RandomImg
 }
 
+
 $object = $Response.Content | ConvertFrom-Json
+$object = $object[0]
+
 
 ## parse the output
-$explanation = $object."explanation"
+$explanationHtml = $object."explanation"
 $title = $object."title"
+$alt = $object."alt"
 $imgUrl = $object."url"
 $hdImgUrl = $object."hdurl"
 $date = $object.date
@@ -69,8 +73,11 @@ $type = $object."media_type"
 
 
 if ($type -eq "image") {
-    #save description text
-    ("$title`n") + ("$date`n") + (($Explanation -split '\. ') -join "`n") | Out-File $DESCSAVEPATH
+    #save alt text
+    ("$title`n") + ("$date`n") + (($alt -split '\. ') -join "`n") | Out-File $ALTSAVEPATH
+
+    #save explanation html
+    $explanationHtml | Out-File $EXPLANATIONHTMLSAVEPATH
 
     $path = $IMAGESAVEPATH
     $imgName = "$date.jpg"
