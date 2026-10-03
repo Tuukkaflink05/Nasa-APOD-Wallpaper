@@ -73,11 +73,17 @@ $type = $object."media_type"
 
 
 if ($type -eq "image") {
-    #save alt text
-    ("$title`n") + ("$date`n") + (($alt -split '\. ') -join "`n") | Out-File $ALTSAVEPATH
 
-    #save explanation html
-    $explanationHtml | Out-File $EXPLANATIONHTMLSAVEPATH
+    if ($ALTSAVEPATH -ne "YOUR-ALT-SAVE-PATH-HERE") {
+        #save alt text
+        ("$title`n") + ("$date`n") + (($alt -split '\. ') -join "`n") | Out-File $ALTSAVEPATH
+    }
+
+    if ($EXPLANATIONHTMLSAVEPATH -ne "YOUR-EXPLANATION-SAVE-PATH-HERE") {
+        #save explanation html
+        $explanationHtml | Out-File $EXPLANATIONHTMLSAVEPATH
+    }
+
 
     $path = $IMAGESAVEPATH
     $imgName = "$date.jpg"
