@@ -1,6 +1,4 @@
-$APIKEY = "YOUR-API-KEY-HERE"
-$DESCSAVEPATH = "YOUR-DESCRIPTION-SAVE-PATH-HERE"
-$IMAGESAVEPATH = "YOUR-IMAGE-SAVE-PATH-HERE"
+. "$PSScriptRoot\config.ps1"
 
 #sets desktop wallpaper to the image from the path given
 function Set-Wallpaper {
@@ -11,7 +9,7 @@ function Set-Wallpaper {
 
     ##set the image
     if (-not ("Wallpaper" -as [type])) {
-    Add-Type -TypeDefinition @"
+        Add-Type -TypeDefinition @"
     using System;
     using System.Runtime.InteropServices;
     public class Wallpaper {
@@ -44,11 +42,12 @@ function Get-RandomImg {
 
 }
 
-$url = "https://api.nasa.gov/planetary/apod?api_key=$APIKEY"
+
 
 try {
     $Response = Invoke-WebRequest -UseBasicParsing -Method 'GET' -Uri $url
-} catch {
+}
+catch {
     $StatusCode = $_.Exception.Response.StatusCode.value__
     $errorMsg = "Web request failed with code: $StatusCode"
     Write-Warning  $errorMsg
@@ -69,8 +68,7 @@ $date = $object.date
 $type = $object."media_type"
 
 
-if ($type -eq "image")
-{
+if ($type -eq "image") {
     #save description text
     ("$title`n") + ("$date`n") + (($Explanation -split '\. ') -join "`n") | Out-File $DESCSAVEPATH
 
@@ -83,7 +81,8 @@ if ($type -eq "image")
     #if hd image url is not null try to save the hd image else save normal image
     if ($null -ne $hdImgUrl) {
         Invoke-WebRequest -UseBasicParsing -outfile $fullPath -Uri $hdImgUrl
-    } else {
+    }
+    else {
         Invoke-WebRequest -UseBasicParsing -outfile $fullPath -Uri $imgUrl
     }
 
