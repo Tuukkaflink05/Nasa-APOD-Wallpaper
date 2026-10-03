@@ -24,6 +24,12 @@ git clone https://github.com/Tuukkaflink05/Nasa-APOD-Wallpaper
 cd Nasa-APOD-Wallpaper
 ```
 
+### rename the config.ps1.template file
+
+```
+ren config.ps1.template config.ps1
+```
+
 ### Open the config.ps1 file and change placeholder values:
 #### required
 - 'YOUR-API-KEY-HERE'
