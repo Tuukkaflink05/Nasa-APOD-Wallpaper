@@ -30,7 +30,7 @@ cd Nasa-APOD-Wallpaper
     - with your nasa api key
 
 - 'YOUR-IMAGE-SAVE-PATH-HERE'
-    - With the path where you want to save the image
+    - With the path to a directory where you want to save the images
 
 #### optional
 
